@@ -1,1 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Habitat – Create Property</title>
+</head>
 
+<body>
+
+<h1>Create Property</h1>
+
+<select id="type">
+  <option value="house">House</option>
+  <option value="apartment">Apartment</option>
+  <option value="studio">Studio</option>
+  <option value="library">Library</option>
+</select>
+
+<br><br>
+
+<input id="place" placeholder="riverton">
+
+<br><br>
+
+<button id="createBtn">Create Property</button>
+
+<pre id="output"></pre>
+
+<!-- Supabase library (ONE TIME ONLY) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<script>
+/* CONFIG */
+const SUPABASE_URL = "https://tgplhoufpwpfhidxhgin.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncGxob3VmcHdwZmhpZHhoZ2luIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgxMzgzMTEsImV4cCI6MjA4MzcxNDMxMX0.uN5xJq1BbZs2UUjmIJU39XycOvoxE4z1sisV4a1BoL0";
+
+/* CLIENT (NAME IS NOT 'supabase') */
+const db = supabaseJs.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+/* HELPERS */
+function randomId() {
+  return Math.random().toString(36).substring(2, 7).toUpperCase();
+}
+
+function randomKey(type) {
+  return `ADDR-${type.toUpperCase()}-${randomId()}${randomId()}`;
+}
+
+/* MAIN */
+async function createProperty() {
+  const type = document.getElementById("type").value;
+  const place = document.getElementById("place").value.trim().toLowerCase();
+  const out = document.getElementById("output");
+
+  if (!place) {
+    alert("Enter a place");
+    return;
+  }
+
+  const id = randomId();
+  const key = randomKey(type);
+  const address = `${id}.${place}.${type}.address`;
+
+  const expires = new Date();
+  expires.setDate(expires.getDate() + 100);
+
+  const { error } = await db.from("properties").insert({
+    key,
+    property_type: type,
+    place,
+    address,
+    expires_at: expires.toISOString()
+  });
+
+  if (error) {
+    out.textContent = "ERROR:\n" + error.message;
+    return;
+  }
+
+  out.textContent =
+`PROPERTY CREATED
+
+KEY:
+${key}
+
+ADDRESS:
+${address}
+
+SERVER URL:
+http://localhost:7777/property`;
+}
+
+/* BUTTON */
+document
+  .getElementById("createBtn")
+  .addEventListener("click", createProperty);
+
+console.log("Habitat loaded OK");
+</script>
+
+</body>
+</html>
