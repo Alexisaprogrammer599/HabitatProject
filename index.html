@@ -2,81 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Address — Create Property</title>
-
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f1115;
-      color: #eaeaea;
-      padding: 40px;
-      max-width: 700px;
-      margin: auto;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #b0b0b0;
-    }
-
-    label {
-      display: block;
-      margin-top: 20px;
-      margin-bottom: 6px;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-    }
-
-    input, select {
-      background: #1b1e25;
-      color: #fff;
-    }
-
-    button {
-      background: #3b82f6;
-      color: #fff;
-      margin-top: 25px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #2563eb;
-    }
-
-    pre {
-      background: #1b1e25;
-      padding: 15px;
-      margin-top: 25px;
-      border-radius: 6px;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .warn {
-      color: #facc15;
-      margin-top: 10px;
-    }
-  </style>
+  <title>Habitat – Create Property</title>
 </head>
+
 <body>
 
-<h1>Create a Property</h1>
-<p>
-This page creates a property for the Address network.<br>
-You will receive a key and address. Save them.
-</p>
+<h1>Create Property</h1>
 
-<label>Property Type</label>
 <select id="type">
   <option value="house">House</option>
   <option value="apartment">Apartment</option>
@@ -84,22 +16,19 @@ You will receive a key and address. Save them.
   <option value="library">Library</option>
 </select>
 
-<label>Place (town / area)</label>
 <input id="place" placeholder="riverton">
 
 <button onclick="createProperty()">Create Property</button>
 
 <pre id="output"></pre>
 
-<p class="warn">
-⚠ Keys cannot be recovered. Save it somewhere safe.
-</p>
+<!-- ✅ SUPABASE LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ✅ YOUR SCRIPT (LAST) -->
 <script>
-  // 🔴 REPLACE THESE WITH YOUR OWN
-  const SUPABASE_URL = "https://tgplhoufpwpfhidxhgin.supabase.co";
-  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncGxob3VmcHdwZmhpZHhoZ2luIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgxMzgzMTEsImV4cCI6MjA4MzcxNDMxMX0.uN5xJq1BbZs2UUjmIJU39XycOvoxE4z1sisV4a1BoL0";
+  const SUPABASE_URL = "YOUR_SUPABASE_URL";
+  const SUPABASE_KEY = "YOUR_ANON_PUBLIC_KEY";
 
   const supabase = supabaseJs.createClient(
     SUPABASE_URL,
@@ -114,13 +43,14 @@ You will receive a key and address. Save them.
     return `ADDR-${type.toUpperCase()}-${randomId()}${randomId()}`;
   }
 
+  // 🔴 THIS LINE IS CRITICAL
   window.createProperty = async function () {
     const type = document.getElementById("type").value;
     const place = document.getElementById("place").value.trim().toLowerCase();
     const output = document.getElementById("output");
 
     if (!place) {
-      alert("Enter a place name.");
+      alert("Enter a place");
       return;
     }
 
@@ -134,10 +64,10 @@ You will receive a key and address. Save them.
     const { error } = await supabase
       .from("properties")
       .insert({
-        key: key,
+        key,
         property_type: type,
-        place: place,
-        address: address,
+        place,
+        address,
         expires_at: expires.toISOString()
       });
 
@@ -147,24 +77,17 @@ You will receive a key and address. Save them.
     }
 
     output.textContent =
-`PROPERTY CREATED SUCCESSFULLY
+`PROPERTY CREATED
 
-PROPERTY KEY (SAVE THIS):
+KEY:
 ${key}
 
-PROPERTY ADDRESS:
+ADDRESS:
 ${address}
 
-SERVER URL (PASTE INTO SERVER):
-http://localhost:7777/property
-
-INSTRUCTIONS:
-1. Run the Property Server (C#)
-2. Paste the KEY when asked
-3. Paste the ADDRESS when asked
-4. Keep the server running
-5. Others can now visit your property`;
-  }
+SERVER URL:
+http://localhost:7777/property`;
+  };
 </script>
 
 </body>
