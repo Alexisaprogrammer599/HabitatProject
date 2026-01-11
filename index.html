@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Address – Create Property</title>
+</head>
+<body>
+  <h1>Create Property</h1>
+
+  <label>Property Type</label><br>
+  <select id="type">
+    <option value="house">House</option>
+    <option value="apartment">Apartment</option>
+    <option value="studio">Studio</option>
+    <option value="library">Library</option>
+  </select>
+
+  <br><br>
+
+  <label>Place</label><br>
+  <input id="place" placeholder="riverton">
+
+  <br><br>
+
+  <button onclick="createProperty()">Create</button>
+
+  <pre id="output"></pre>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const supabase = supabaseJs.createClient(
+      "YOUR_SUPABASE_URL",
+      "YOUR_ANON_PUBLIC_KEY"
+    );
+
+    function randomId() {
+      return Math.random().toString(36).substring(2, 7).toUpperCase();
+    }
+
+    function randomKey(type) {
+      return `ADDR-${type.toUpperCase()}-${randomId()}${randomId()}`;
+    }
+
+    async function createProperty() {
+      const type = document.getElementById("type").value;
+      const place = document.getElementById("place").value.trim();
+
+      if (!place) {
+        alert("Enter a place");
+        return;
+      }
+
+      const id = randomId();
+      const key = randomKey(type);
+      const address = `${id}.${place}.${type}.address`;
+
+      const expires = new Date();
+      expires.setDate(expires.getDate() + 100);
+
+      const { error } = await supabase
+        .from("properties")
+        .insert({
+          key,
+          property_type: type,
+          place,
+          address,
+          expires_at: expires.toISOString()
+        });
+
+      if (error) {
+        document.getElementById("output").textContent =
+          "Error: " + error.message;
+        return;
+      }
+
+      document.getElementById("output").textContent =
+        "SAVE THIS KEY (NO RECOVERY):\n\n" +
+        key +
+        "\n\nAddress:\n" +
+        address;
+    }
+  </script>
+</body>
+</html>
