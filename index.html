@@ -114,7 +114,7 @@ You will receive a key and address. Save them.
     return `ADDR-${type.toUpperCase()}-${randomId()}${randomId()}`;
   }
 
-  async function createProperty() {
+  window.createProperty = async function () {
     const type = document.getElementById("type").value;
     const place = document.getElementById("place").value.trim().toLowerCase();
     const output = document.getElementById("output");
