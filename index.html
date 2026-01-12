@@ -26,21 +26,21 @@
 
 <pre id="output"></pre>
 
-<!-- Supabase library (ONE TIME ONLY) -->
+<!-- ✅ Supabase UMD (defines window.supabase) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
 <script>
-/* CONFIG */
+/* ================= CONFIG ================= */
 const SUPABASE_URL = "https://tgplhoufpwpfhidxhgin.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncGxob3VmcHdwZmhpZHhoZ2luIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgxMzgzMTEsImV4cCI6MjA4MzcxNDMxMX0.uN5xJq1BbZs2UUjmIJU39XycOvoxE4z1sisV4a1BoL0";
 
-/* CLIENT (NAME IS NOT 'supabase') */
-const db = supabaseJs.createClient(
+/* ================= CLIENT ================= */
+const db = supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-/* HELPERS */
+/* ================= HELPERS ================= */
 function randomId() {
   return Math.random().toString(36).substring(2, 7).toUpperCase();
 }
@@ -49,14 +49,14 @@ function randomKey(type) {
   return `ADDR-${type.toUpperCase()}-${randomId()}${randomId()}`;
 }
 
-/* MAIN */
+/* ================= MAIN ================= */
 async function createProperty() {
   const type = document.getElementById("type").value;
   const place = document.getElementById("place").value.trim().toLowerCase();
   const out = document.getElementById("output");
 
   if (!place) {
-    alert("Enter a place");
+    alert("Enter a place name.");
     return;
   }
 
@@ -81,24 +81,31 @@ async function createProperty() {
   }
 
   out.textContent =
-`PROPERTY CREATED
+`PROPERTY CREATED SUCCESSFULLY
 
-KEY:
+PROPERTY KEY:
 ${key}
 
-ADDRESS:
+PROPERTY ADDRESS:
 ${address}
 
 SERVER URL:
-http://localhost:7777/property`;
+http://localhost:7777/property
+
+NEXT STEPS:
+1. Run the C# Property Server
+2. Paste the KEY when asked
+3. Paste the ADDRESS when asked
+4. Keep the server running`;
 }
 
-/* BUTTON */
+/* ================= BUTTON ================= */
 document
   .getElementById("createBtn")
   .addEventListener("click", createProperty);
 
-console.log("Habitat loaded OK");
+console.log("Habitat loaded correctly");
+console.log("Supabase client:", db);
 </script>
 
 </body>
